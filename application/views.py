@@ -8,7 +8,10 @@ from .forms import RegistrationForm, LoginForm
 # Create your views here.
 @login_required
 def index(request):
-    return render(request, 'application/index.html')
+    if not request.user.is_staff:
+        return render(request, 'application/index.html')
+    else:
+        return redirect('application:administrator')
 
 def register(request):
     form = RegistrationForm()
@@ -67,17 +70,20 @@ def user_login(request):
                 'form': form,
                 'error': 'Please enter a correct username and password. Note that both fields may be case-sensitive.',
             })
-
+@login_required
 def administrator(request):
     if request.method == 'GET':
-        users = CustomUser.objects.all().filter(
-            is_approve=False, 
-            is_complete=False, 
-            is_staff=False
-        )
-        return render(request, 'application/administrator.html', {
-            'users': users
-        })
+        if request.user.is_staff:
+            users = CustomUser.objects.all().filter(
+                is_approve=False, 
+                is_complete=False, 
+                is_staff=False
+            )
+            return render(request, 'application/administrator.html', {
+                'users': users
+            })
+        else:
+            return redirect('application:index')
 
 def approval(request, id):
     if request.method == 'POST':
