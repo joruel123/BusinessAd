@@ -70,6 +70,7 @@ def user_login(request):
                 'form': form,
                 'error': 'Please enter a correct username and password. Note that both fields may be case-sensitive.',
             })
+
 @login_required
 def administrator(request):
     if request.method == 'GET':
@@ -85,6 +86,7 @@ def administrator(request):
         else:
             return redirect('application:index')
 
+@login_required
 def approval(request, id):
     if request.method == 'POST':
         user = CustomUser.objects.get(id=id)
@@ -101,7 +103,8 @@ def approval(request, id):
         return render(request, 'application/administrator.html', {
             'users': users
         })
-
+        
+@login_required
 def disapproval(request, id):
     if request.method == 'POST':
         user = CustomUser.objects.get(id=id)
